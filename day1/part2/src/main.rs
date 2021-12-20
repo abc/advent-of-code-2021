@@ -8,30 +8,41 @@ fn main() {
     let contents = fs::read_to_string(filename)
         .expect("Could not read the input file");
 
-    let mut previous_num:Option<i32> = None;
+    let mut num_x:Option<i32> = None;
+    let mut num_y:Option<i32> = None;
+    let mut num_z:Option<i32> = None;
+    let mut previous_sum:Option<i32> = None;
     let mut count = 0;
 
     for line in contents.lines() {
         let num:i32 = line.trim().parse().expect("Invalid number");
-        let msg = get_msg(previous_num, num);
-        previous_num = Some(num);
-        println!("{} ({})", num, msg);
 
-        if msg == "increased"
+        num_z = num_y;
+        num_y = num_x;
+        num_x = Some(num);
+        
+        let sum = match (num_x, num_y, num_z) {
+            (Some(x), Some(y), Some(z)) => x + y + z,
+            (_, _, _) => continue,
+        };
+
+        let msg = match previous_sum {
+            Some(x) if sum > x => "increased",
+            Some(x) if sum < x => "decreased",
+            Some(x) if sum == x => "unchanged",
+            Some(_) => panic!("Invalid"),
+            None => "N/A - no previous sum",
+        };
+
+        previous_sum = Some(sum);
+
+        if msg.eq("increased")
         {
             count += 1;
         }
+
+        println!("{} ({})", sum, msg);
     }
 
     println!("Increased {} times.", count);
-}
-
-fn get_msg(previous_num: Option<i32>, num: i32) -> String {
-    match previous_num {
-        Some(x) if x > num => String::from("decreased"),
-        Some(x) if x < num => String::from("increased"),
-        Some(x) if x == num => String::from("unchanged"),
-        Some(_) => panic!("An error occurred when comparing the numbers"),
-        None => String::from("N/A - no previous measurement"),
-    }
 }
