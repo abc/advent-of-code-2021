@@ -5,7 +5,8 @@ fn main() {
         .expect("Could not read input file");
 
     let len = input.lines().next().unwrap().chars().count();
-    let mut gamma:u32 = 0;
+    let mut gammaStr = String::new();
+    let mut epsilonStr = String::new();
 
     for n in 0..len {
         let mut zero_count = 0;
@@ -19,13 +20,17 @@ fn main() {
             }
         }
 
-        gamma = gamma << 1;
-
-        if one_count > zero_count {
-            gamma += 1;
+        if zero_count > one_count {
+            gammaStr += "0";
+            epsilonStr += "1";
+        }
+        else {
+            gammaStr += "1";
+            epsilonStr += "0";
         }
     }
 
-    let epsilon = !gamma;
+    let gamma = u32::from_str_radix(&gammaStr, 2).unwrap();
+    let epsilon = u32::from_str_radix(&epsilonStr, 2).unwrap();
     println!("Gamma: {} Epsilon: {}", gamma, epsilon);
 }
